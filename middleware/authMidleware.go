@@ -1,7 +1,9 @@
 package middleware
 
 import (
-	"github.com/labstack/echo"
+	"github.com/dee25092005/go-core-pkg/apperrors"
+	"github.com/dee25092005/go-core-pkg/utils"
+	"github.com/labstack/echo/v4"
 )
 
 type TokenRepository interface {
@@ -11,7 +13,7 @@ type TokenRepository interface {
 func AuthMiddleware(tokenRepo TokenRepository) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			authHeader := c.Request.Header.Get("Authorization")
+			authHeader := c.Request().Header.Get("Authorization")
 			if authHeader == "" {
 				return apperrors.Unauthorized("Authorization header is missing")
 			}

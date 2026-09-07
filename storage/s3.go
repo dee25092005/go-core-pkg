@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	localconfig "todo-backend/config"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -18,16 +17,24 @@ type StorageService interface {
 	DeleteFile(ctx context.Context, key string) error
 }
 
+type R2Config struct {
+	AccountID       string
+	AccessKeyID     string
+	AccessKeySecret string
+	BucketName      string
+	PublicURL       string
+}
+
 type s3Storage struct {
 	client     *s3.Client
 	bucketName string
 	publicURL  string
 }
 
-func NewR2Storage(ctx context.Context, cfg localconfig.Config) (StorageService, error) {
+func NewR2Storage(ctx context.Context, cfg R2Config) (StorageService, error) {
 	r2Resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 		return aws.Endpoint{
-			URL: fmt.Sprintf("https://%s.r2.cloudflarestorage.com", cfg.R2.AccountID),
+			URL: fmt.Sprintf("https://%s.r2.cloudflarestorage.com", cfg.AccountID),
 		}, nil
 	})
 
@@ -36,8 +43,8 @@ func NewR2Storage(ctx context.Context, cfg localconfig.Config) (StorageService, 
 		config.WithEndpointResolverWithOptions(r2Resolver),
 		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(
-				cfg.R2.AccessKeyID,
-				cfg.R2.AccessKeySecret,
+				cfg.AccessKeyID,
+				cfg.AccessKeySecret,
 				"",
 			)),
 		config.WithRegion("auto"),
@@ -52,8 +59,8 @@ func NewR2Storage(ctx context.Context, cfg localconfig.Config) (StorageService, 
 
 	return &s3Storage{
 		client:     client,
-		bucketName: cfg.R2.BucketName,
-		publicURL:  strings.TrimRight(cfg.R2.PublicURL, "/"),
+		bucketName: cfg.BucketName,
+		publicURL:  strings.TrimRight(cfg.PublicURL, "/"),
 	}, nil
 }
 
