@@ -26,14 +26,16 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 				"cause", appErr.Err,
 			)
 		}
-		_ = c.JSON(appErr.Code, echo.Map{"error": appErr.Message})
+		_ = c.JSON(appErr.Code, apperrors.ErrorResponse{Error: appErr})
 		return
 	case errors.As(err, &echoErr):
 		msg := "request error"
 		if strMsg, ok := echoErr.Message.(string); ok {
 			msg = strMsg
 		}
-		_ = c.JSON(echoErr.Code, echo.Map{"error": msg})
+		appErr = apperrors.BadRequest(msg)
+		appErr.Code = echoErr.Code
+		_ = c.JSON(echoErr.Code, apperrors.ErrorResponse{Error: appErr})
 		return
 	}
 	slog.Error("unhandled error",
@@ -41,6 +43,7 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 		slog.String("method", c.Request().Method),
 		slog.Any("error", err),
 	)
-	_ = c.JSON(http.StatusInternalServerError, echo.Map{"error": "internal server error"})
+	internalErr := apperrors.Internal(err)
+	_ = c.JSON(http.StatusInternalServerError, apperrors.ErrorResponse{Error: internalErr})
 
 }
