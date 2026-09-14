@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"cloud_storage-backend/internal/auth"
-	"cloud_storage-backend/pkg/apperrors"
 	"strings"
 
+	"github.com/dee25092005/go-core-pkg/apperrors"
+	"github.com/dee25092005/go-core-pkg/auth"
 	"github.com/labstack/echo/v4"
 )
 

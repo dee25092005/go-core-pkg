@@ -2,12 +2,13 @@ package phajay
 
 import (
 	"bytes"
-	"cloud_storage-backend/pkg/apperrors"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/dee25092005/go-core-pkg/apperrors"
 )
 
 type Client struct {

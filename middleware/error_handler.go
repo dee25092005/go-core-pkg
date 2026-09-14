@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	"cloud_storage-backend/pkg/apperrors"
 	"errors"
 	"log/slog"
 	"net/http"
 
+	"github.com/dee25092005/go-core-pkg/apperrors"
 	"github.com/labstack/echo/v4"
 )
 
