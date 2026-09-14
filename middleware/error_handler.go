@@ -1,11 +1,11 @@
 package middleware
 
 import (
+	"cloud_storage-backend/pkg/apperrors"
 	"errors"
 	"log/slog"
 	"net/http"
 
-	"github.com/dee25092005/go-core-pkg/apperrors"
 	"github.com/labstack/echo/v4"
 )
 
@@ -33,8 +33,20 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 		if strMsg, ok := echoErr.Message.(string); ok {
 			msg = strMsg
 		}
-		appErr = apperrors.BadRequest(msg)
-		appErr.Code = echoErr.Code
+		switch echoErr.Code {
+		case http.StatusNotFound:
+			appErr = apperrors.NotFound(msg)
+		case http.StatusUnauthorized:
+			appErr = apperrors.Unauthorized(msg)
+		case http.StatusForbidden:
+			appErr = apperrors.Forbidden(msg)
+		case http.StatusConflict:
+			appErr = apperrors.Conflict(msg)
+		default:
+			appErr = apperrors.BadRequest(msg)
+			appErr.Code = echoErr.Code
+		}
+
 		_ = c.JSON(echoErr.Code, apperrors.ErrorResponse{Error: appErr})
 		return
 	}

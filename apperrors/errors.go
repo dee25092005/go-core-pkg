@@ -5,18 +5,12 @@ import (
 	"net/http"
 )
 
-type FieldViolation struct {
-	Field  string `json:"field"`
-	Reason string `json:"reason"`
-	Error  string `json:"error"`
-}
-
 type AppError struct {
-	Code    int           `json:"code"`
-	Message string        `json:"message"`
-	Status  string        `json:"status"`
-	Detail  []interface{} `json:"detail,omitempty"`
-	Err     error         `json:"-"`
+	Code    int              `json:"code"`
+	Message string           `json:"message"`
+	Status  string           `json:"status"`
+	Detail  []FieldViolation `json:"detail,omitempty"`
+	Err     error            `json:"-"`
 }
 
 type ErrorResponse struct {
@@ -42,7 +36,7 @@ func (e *AppError) Unwrap() error {
 	return e.Err
 }
 
-func (e *AppError) WithDetail(detail interface{}) *AppError {
+func (e *AppError) WithDetail(detail FieldViolation) *AppError {
 	e.Detail = append(e.Detail, detail)
 	return e
 }
