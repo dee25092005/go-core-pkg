@@ -7,7 +7,7 @@ Instead of copy-pasting the same error handling, auth, logging, storage, and pay
 go get github.com/dee25092005/go-core-pkg
 ```
 
----
+----
 
 ## What's inside
 
