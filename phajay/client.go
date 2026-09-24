@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -66,7 +67,13 @@ func (c *Client) GenerateQR(ctx context.Context, bankCode string, req GenerateQR
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, apperrors.BadRequest("failed to generate qr code")
+		bodyBytes, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, apperrors.BadRequest("failed to read response body")
+		}
+		errorMessage := string(bodyBytes)
+
+		return nil, apperrors.BadRequest(errorMessage)
 	}
 
 	var phajayResp GenerateQRResp
