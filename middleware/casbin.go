@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/casbin/casbin/v2"
-	"github.com/dee25092005/image-worker/pkg/apperrors"
+	"github.com/dee25092005/go-core-pkg/apperrors"
 	"github.com/labstack/echo/v4"
 )
 
