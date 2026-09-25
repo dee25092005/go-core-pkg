@@ -156,6 +156,32 @@ fmt.Println(claims.UserID, claims.Tier)
 
 In most cases you won't call this directly — the `middleware.AuthMiddleware` below does step 2 for you on every request.
 
+**Checking a Google login (OIDC)** — for "Sign in with Google" style login, where the frontend gives you a Google ID token and you need to check it's real:
+
+```go
+import "github.com/dee25092005/go-core-pkg/auth"
+
+// 1. Set this up once when your app starts (it caches Google's public keys)
+validator, err := auth.NewOIDCValidator("https://www.googleapis.com/oauth2/v3/certs")
+if err != nil {
+    // handle error
+}
+
+// 2. When a request comes in with a Google ID token, check it
+claims, err := validator.VerifyGoogleIDToken(idToken, "your-google-client-id.apps.googleusercontent.com")
+if err != nil {
+    // token is invalid, expired, or not meant for your app
+}
+
+fmt.Println(claims.Email, claims.EmailVerified)
+```
+
+What it checks for you:
+- The token is really signed by Google (using Google's public keys, fetched automatically and refreshed once a day)
+- The token was issued **for your app** specifically (matches your `googleClientID`) — this stops someone using a Google token meant for a *different* app to log into yours
+
+If both checks pass, you get back the user's `Email` and `EmailVerified` status — you can now create a session/JWT for them using `auth.GenerateJWT` from above.
+
 ---
 
 ## `database`
